@@ -1,0 +1,382 @@
+<!doctype html>
+<html
+  lang="ko"
+  data-resolution="portrait"
+  data-composition-variables='[
+    {"id":"bg","type":"color","label":"Background","default":"#f0eee6"},
+    {"id":"ink","type":"color","label":"Ink","default":"#1f1e1d"},
+    {"id":"muted","type":"color","label":"Muted","default":"#5e5a54"},
+    {"id":"accent","type":"color","label":"Accent","default":"#ff8904"},
+    {"id":"track","type":"color","label":"Track","default":"#dcd8cc"},
+    {"id":"hookSmall","type":"string","label":"Hook kicker","default":"가입 없이"},
+    {"id":"hookBig","type":"string","label":"Hook word","default":"1분"},
+    {"id":"hookCount","type":"number","label":"Hook count-up (0 = none)","default":0},
+    {"id":"hookUnit","type":"string","label":"Hook unit","default":""},
+    {"id":"hookMark","type":"string","label":"strike|underline","default":"underline"},
+    {"id":"q1","type":"string","label":"Question 1","default":"바로 확인하는"},
+    {"id":"q2","type":"string","label":"Question 2","default":"내 스피킹 등급"},
+    {"id":"obj","type":"string","label":"circle|bar","default":"circle"},
+    {"id":"objIcon","type":"string","label":"mic|camera","default":"mic"},
+    {"id":"objText","type":"string","label":"Typed text in bar","default":""},
+    {"id":"lab1","type":"string","label":"Build label 1","default":"실전과 같은 유형"},
+    {"id":"lab2","type":"string","label":"Build label 2","default":"AI가 채점하면"},
+    {"id":"build","type":"string","label":"wave|sheets|days","default":"wave"},
+    {"id":"resultKicker","type":"string","label":"Result kicker","default":"예시 결과 화면"},
+    {"id":"steps","type":"string","label":"Result steps a|b|c|d","default":"IM1|IM2|IM3|IH"},
+    {"id":"resultMode","type":"string","label":"bar|chart","default":"bar"},
+    {"id":"ticks","type":"string","label":"Bar ticks a|b|c","default":"IM|IH|AL"},
+    {"id":"toNext","type":"string","label":"Next hint","default":"AL까지 →"},
+    {"id":"official","type":"string","label":"Result footnote","default":"공식 채점 기준으로"},
+    {"id":"fb1","type":"string","label":"Feature 1","default":"감점 포인트 진단"},
+    {"id":"fb1Icon","type":"string","label":"alert|check|users|coin|doc","default":"alert"},
+    {"id":"fb2","type":"string","label":"Feature 2","default":"즉시 피드백"},
+    {"id":"fb2Icon","type":"string","label":"alert|check|users|coin|doc","default":"check"},
+    {"id":"word","type":"string","label":"Wordmark","default":"토선생"},
+    {"id":"sub","type":"string","label":"Tagline","default":"토익스피킹 AI 모의고사 채점"},
+    {"id":"chip1","type":"string","label":"Chip 1","default":"가입 없이 1분"},
+    {"id":"chip2","type":"string","label":"Chip 2","default":"무료"},
+    {"id":"cta","type":"string","label":"CTA","default":"무료 모의고사 바로 보기 →"},
+    {"id":"url","type":"string","label":"URL","default":"to-teacher.com"},
+    {"id":"sample","type":"string","label":"Corner label","default":"제안용 시안"}
+  ]'
+>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1080, height=1920" />
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <style>
+      @font-face { font-family: "RixSeoulStation"; src: local("RixSeoulStationPM"), local("RixSeoulStation_Pro"); }
+      @font-face { font-family: "Pretendard"; font-weight: 800; src: url("fonts/Pretendard-ExtraBold.woff2") format("woff2"); }
+      :root { --bg: #f0eee6; --ink: #1f1e1d; --muted: #5e5a54; --accent: #ff8904; --track: #dcd8cc; }
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      html, body { width: 1080px; height: 1920px; overflow: hidden; background: var(--bg); }
+      #root {
+        position: relative; width: 1080px; height: 1920px; overflow: hidden; background: var(--bg); color: var(--ink);
+        font-family: "RixSeoulStation", "Pretendard", sans-serif; font-synthesis: none; font-variant-numeric: tabular-nums;
+        letter-spacing: -0.035em; word-break: keep-all;
+      }
+      .layer, .clip { position: absolute; inset: 0; }
+      .center-x { position: absolute; left: 0; right: 0; text-align: center; }
+      #bgGrid { position: absolute; left: -120px; top: -120px; width: 1320px; height: 2160px; opacity: 0.55; }
+      .blob { position: absolute; border-radius: 50%; background: var(--accent); }
+      #blob1 { width: 900px; height: 900px; left: 520px; top: -260px; opacity: 0.10; filter: blur(30px); }
+      #blob2 { width: 640px; height: 640px; left: -300px; top: 1380px; opacity: 0.09; filter: blur(24px); }
+
+      #hookSmall { top: 610px; font-size: 64px; color: var(--muted); }
+      #hookBigWrap { position: absolute; left: 0; right: 0; top: 720px; height: 260px; text-align: center; }
+      #hookBig { display: inline-block; position: relative; font-size: 196px; line-height: 260px; letter-spacing: -0.05em; white-space: nowrap; }
+      #hookMark { position: absolute; left: -24px; right: -24px; background: var(--accent); transform-origin: 0% 50%; }
+      #hookMark.strike { top: 96px; height: 18px; border-radius: 9px; }
+      #hookMark.underline { top: 250px; height: 22px; border-radius: 11px; }
+
+      #q1 { top: 690px; font-size: 104px; }
+      #q2Wrap { position: absolute; left: 0; right: 0; top: 850px; text-align: center; }
+      #q2Box { display: inline-block; position: relative; padding: 6px 36px 14px; }
+      #hl { position: absolute; left: 0; top: 0; width: 100%; height: 100%; background: var(--accent); border-radius: 26px; transform-origin: 0% 50%; }
+      #q2 { position: relative; font-size: 128px; line-height: 150px; white-space: nowrap; }
+
+      #lab1, #lab2 { top: 430px; font-size: 76px; }
+      #micWrap { position: absolute; left: 410px; top: 640px; width: 260px; height: 260px; }
+      #mic { position: absolute; inset: 0; border-radius: 50%; background: var(--accent); display: flex; align-items: center; justify-content: center; }
+      .ring { position: absolute; inset: 0; border-radius: 50%; border: 6px solid var(--accent); }
+      #barWrap { position: absolute; left: 110px; top: 695px; width: 860px; height: 150px; border-radius: 40px; background: #fff; border: 6px solid var(--accent); display: flex; align-items: center; padding: 0 44px; box-shadow: 0 24px 60px rgba(0,0,0,0.10); }
+      #barText { font-size: 60px; white-space: nowrap; overflow: hidden; }
+      #caret { display: inline-block; width: 5px; height: 64px; margin-left: 6px; background: var(--ink); vertical-align: -8px; }
+      #build { position: absolute; left: 0; right: 0; top: 1060px; height: 300px; }
+      .bar { position: absolute; top: 0; width: 18px; height: 300px; border-radius: 9px; background: var(--ink); transform-origin: 50% 50%; }
+      .sheet { position: absolute; top: 10px; width: 190px; height: 250px; border-radius: 18px; background: #fff; box-shadow: 0 16px 40px rgba(0,0,0,0.12); padding: 26px 22px; }
+      .sheet i { display: block; height: 12px; border-radius: 6px; background: var(--track); margin-bottom: 16px; }
+      .sheet b { display: block; font-size: 34px; font-weight: normal; margin-bottom: 18px; color: var(--ink); }
+      .day { position: absolute; top: 60px; width: 110px; height: 110px; border-radius: 50%; border: 6px solid var(--track); display: flex; align-items: center; justify-content: center; font-size: 40px; color: var(--muted); }
+      .day .dot { position: absolute; inset: -6px; border-radius: 50%; background: var(--accent); display: flex; align-items: center; justify-content: center; }
+
+      #gradeCard { position: absolute; left: 90px; top: 560px; width: 900px; height: 720px; }
+      #gradeKicker { position: absolute; left: 0; right: 0; top: 0; text-align: center; font-size: 44px; color: var(--muted); }
+      #grade { position: absolute; left: 0; right: 0; top: 70px; text-align: center; font-size: 300px; line-height: 320px; letter-spacing: -0.04em; white-space: nowrap; }
+      #track { position: absolute; left: 60px; top: 470px; width: 780px; height: 40px; border-radius: 20px; background: var(--track); overflow: hidden; }
+      #fill { position: absolute; inset: 0; background: var(--accent); border-radius: 20px; transform-origin: 0% 50%; }
+      #chart { position: absolute; left: 60px; top: 400px; width: 780px; height: 180px; overflow: visible; }
+      .tick { position: absolute; top: 530px; font-size: 36px; color: var(--muted); width: 160px; margin-left: -80px; text-align: center; }
+      #toAL { position: absolute; left: 0; right: 0; top: 596px; text-align: center; font-size: 52px; white-space: nowrap; }
+      #official { top: 1390px; font-size: 50px; }
+
+      .fb { position: absolute; left: 90px; width: 900px; height: 190px; border-radius: 36px; background: #fff; box-shadow: 0 24px 60px rgba(0,0,0,0.12); display: flex; align-items: center; padding: 0 48px; gap: 36px; }
+      #fb1 { top: 880px; } #fb2 { top: 1110px; }
+      .fbIcon { width: 104px; height: 104px; flex: none; border-radius: 50%; background: var(--accent); display: flex; align-items: center; justify-content: center; }
+      .fbText { font-size: 62px; white-space: nowrap; }
+
+      #iris { position: absolute; left: 540px; top: 1250px; width: 40px; height: 40px; border-radius: 20px; background: var(--accent); }
+      #word { top: 520px; font-size: 230px; line-height: 260px; letter-spacing: -0.06em; white-space: nowrap; }
+      #sub { top: 810px; font-size: 52px; color: var(--muted); }
+      #chips { top: 930px; display: flex; justify-content: center; gap: 20px; }
+      .chip { font-size: 42px; padding: 16px 34px; border-radius: 999px; border: 4px solid var(--ink); white-space: nowrap; }
+      #ctaText { position: absolute; left: 0; right: 0; top: 1206px; text-align: center; font-size: 62px; line-height: 88px; color: var(--ink); white-space: nowrap; }
+      #url { top: 1370px; font-size: 44px; color: var(--muted); letter-spacing: -0.01em; }
+      #sample { position: absolute; left: auto; right: 60px; top: 300px; bottom: auto; font-size: 30px; color: var(--muted); letter-spacing: 0; }
+    </style>
+  </head>
+  <body>
+    <div id="root" data-composition-id="main" data-start="0" data-duration="15" data-width="1080" data-height="1920">
+      <div id="world" class="layer">
+        <div id="bg" class="layer">
+          <svg id="bgGrid" viewBox="0 0 1320 2160" xmlns="http://www.w3.org/2000/svg">
+            <defs><pattern id="dots" width="60" height="60" patternUnits="userSpaceOnUse"><circle id="dotc" cx="30" cy="30" r="3" fill="#1f1e1d" opacity="0.18" /></pattern></defs>
+            <rect width="1320" height="2160" fill="url(#dots)" />
+          </svg>
+          <div id="blob1" class="blob"></div>
+          <div id="blob2" class="blob"></div>
+        </div>
+
+        <div id="s1" class="clip" data-start="0" data-duration="2.6" data-track-index="1">
+          <div id="hookSmall" class="center-x"></div>
+          <div id="hookBigWrap"><span id="hookBig"><span id="hookText"></span><i id="hookMark"></i></span></div>
+        </div>
+
+        <div id="s2" class="clip" data-start="1.7" data-duration="2.6" data-track-index="2">
+          <div id="q1" class="center-x"></div>
+          <div id="q2Wrap"><span id="q2Box"><i id="hl"></i><span id="q2"></span></span></div>
+        </div>
+
+        <div id="s3" class="clip" data-start="3.6" data-duration="4.4" data-track-index="3">
+          <div id="lab1" class="center-x"></div>
+          <div id="lab2" class="center-x"></div>
+          <div id="micWrap">
+            <i class="ring" id="ring1"></i><i class="ring" id="ring2"></i>
+            <div id="mic"></div>
+          </div>
+          <div id="barWrap"><span id="barText"></span><i id="caret"></i></div>
+          <div id="build"></div>
+        </div>
+
+        <div id="s4" class="clip" data-start="7.5" data-duration="4.7" data-track-index="4">
+          <div id="gradeCard">
+            <div id="gradeKicker"></div>
+            <div id="grade"></div>
+            <div id="track"><i id="fill"></i></div>
+            <svg id="chart" viewBox="0 0 780 180"><path id="chartPath" d="M0 160 L90 140 L170 150 L260 115 L340 125 L430 85 L510 95 L600 55 L680 60 L780 12" fill="none" stroke-width="14" stroke-linecap="round" stroke-linejoin="round" /></svg>
+            <div class="tick" id="t0" style="left: 180px"></div>
+            <div class="tick" id="t1" style="left: 560px"></div>
+            <div class="tick" id="t2" style="left: 780px"></div>
+            <div id="toAL"></div>
+          </div>
+          <div id="official" class="center-x"></div>
+        </div>
+
+        <div id="s5" class="clip" data-start="9.3" data-duration="3.3" data-track-index="5">
+          <div id="fb1" class="fb"><div class="fbIcon" id="fb1i"></div><div class="fbText" id="fb1t"></div></div>
+          <div id="fb2" class="fb"><div class="fbIcon" id="fb2i"></div><div class="fbText" id="fb2t"></div></div>
+        </div>
+
+        <div id="s6" class="clip" data-start="12.1" data-duration="2.9" data-track-index="6">
+          <div id="word" class="center-x"></div>
+          <div id="sub" class="center-x"></div>
+          <div id="chips" class="center-x"><span class="chip" id="chip1"></span><span class="chip" id="chip2"></span></div>
+          <div id="url" class="center-x"></div>
+        </div>
+        <div id="irisLayer" class="clip" data-start="11.2" data-duration="3.8" data-track-index="7"><i id="iris"></i></div>
+        <div id="ctaLayer" class="clip" data-start="12.1" data-duration="2.9" data-track-index="8"><div id="ctaText"></div></div>
+      </div>
+      <div id="sample" class="clip" data-start="0" data-duration="15" data-track-index="9"></div>
+    </div>
+
+    <script>
+      (function () {
+        const V = (window.__hyperframes && window.__hyperframes.getVariables && window.__hyperframes.getVariables()) || {};
+        const B = 0.46875; // 128 BPM — shared beat grid with soundtrack.wav
+        const at = (beats) => +(beats * B).toFixed(5);
+        const $ = (s) => document.querySelector(s);
+        const root = document.documentElement;
+        ["bg", "ink", "muted", "accent", "track"].forEach((k) => V[k] && root.style.setProperty("--" + k, V[k]));
+        $("#dotc").setAttribute("fill", V.ink || "#1f1e1d");
+
+        const ICON = {
+          mic: '<svg width="120" height="150" viewBox="0 0 120 150" fill="none" stroke="currentColor" stroke-width="12" stroke-linecap="round"><rect x="36" y="8" width="48" height="84" rx="24" fill="currentColor"/><path d="M16 70 a44 44 0 0 0 88 0"/><path d="M60 114 v26"/></svg>',
+          camera: '<svg width="140" height="120" viewBox="0 0 140 120" fill="none" stroke="currentColor" stroke-width="11" stroke-linejoin="round"><path d="M10 34 h30 l12 -18 h36 l12 18 h30 v76 h-120 z"/><circle cx="70" cy="68" r="24"/></svg>',
+          alert: '<svg width="60" height="60" viewBox="0 0 60 60" fill="none" stroke="currentColor" stroke-width="9" stroke-linecap="round"><path d="M30 10 v26"/><path d="M30 50 v1"/></svg>',
+          check: '<svg width="64" height="64" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="9" stroke-linecap="round" stroke-linejoin="round"><path class="chk" d="M12 34 L27 48 L53 18" stroke-dasharray="70" stroke-dashoffset="70"/></svg>',
+          users: '<svg width="70" height="60" viewBox="0 0 70 60" fill="none" stroke="currentColor" stroke-width="8" stroke-linecap="round"><circle cx="24" cy="18" r="11"/><path d="M4 54 a20 20 0 0 1 40 0"/><circle cx="50" cy="20" r="9"/><path d="M46 36 a18 18 0 0 1 20 18"/></svg>',
+          coin: '<svg width="64" height="64" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="8" stroke-linecap="round"><circle cx="32" cy="32" r="24"/><path d="M22 24 l5 18 l5 -14 l5 14 l5 -18"/></svg>',
+          doc: '<svg width="56" height="66" viewBox="0 0 56 66" fill="none" stroke="currentColor" stroke-width="8" stroke-linejoin="round" stroke-linecap="round"><path d="M6 4 h30 l14 14 v44 h-44 z"/><path d="M16 34 h24 M16 48 h16"/></svg>',
+        };
+        // deterministic width estimate (fonts may not be loaded when this runs): Hangul ≈ 0.95em, space ≈ 0.3em, other ≈ 0.6em
+        const estEm = (t) => [...String(t)].reduce((a, ch) => a + (ch.charCodeAt(0) >= 0xac00 && ch.charCodeAt(0) <= 0xd7a3 ? 0.95 : ch === " " ? 0.3 : 0.6), 0);
+        const fit = (el, maxW) => { const fs = parseFloat(getComputedStyle(el).fontSize), w = estEm(el.textContent) * fs; if (w > maxW) el.style.fontSize = Math.floor((fs * maxW) / w) + "px"; };
+
+        // ---- copy
+        $("#hookSmall").textContent = V.hookSmall;
+        $("#hookText").textContent = V.hookBig;
+        $("#hookMark").className = V.hookMark === "strike" ? "strike" : "underline";
+        $("#q1").textContent = V.q1; $("#q2").textContent = V.q2;
+        $("#lab1").textContent = V.lab1; $("#lab2").textContent = V.lab2;
+        $("#mic").innerHTML = ICON[V.objIcon] || ICON.mic; $("#mic").style.color = V.ink;
+        const steps = String(V.steps).split("|");
+        $("#grade").textContent = steps[0];
+        $("#gradeKicker").textContent = V.resultKicker;
+        String(V.ticks).split("|").forEach((t, i) => { const el = $("#t" + i); if (el) el.textContent = t || ""; });
+        $("#toAL").textContent = V.toNext; $("#official").textContent = V.official;
+        $("#fb1t").textContent = V.fb1; $("#fb2t").textContent = V.fb2;
+        $("#fb1i").innerHTML = ICON[V.fb1Icon] || ICON.alert; $("#fb2i").innerHTML = ICON[V.fb2Icon] || ICON.check;
+        $("#fb1i").style.color = V.ink; $("#fb2i").style.color = V.ink;
+        $("#word").textContent = V.word; $("#sub").textContent = V.sub;
+        $("#chip1").textContent = V.chip1; $("#chip2").textContent = V.chip2;
+        if (!V.chip2) $("#chip2").style.display = "none";
+        $("#ctaText").textContent = V.cta; $("#url").textContent = V.url;
+        $("#sample").textContent = V.sample;
+        $("#chartPath").setAttribute("stroke", V.accent);
+        const isBar = V.obj === "bar", isChart = V.resultMode === "chart";
+        $(isBar ? "#micWrap" : "#barWrap").style.display = "none";
+        $(isChart ? "#track" : "#chart").style.display = "none";
+        if (isChart) document.querySelectorAll(".tick").forEach((t) => (t.style.display = "none"));
+        fit($("#hookText"), 840); $("#hookBig").style.fontSize = $("#hookText").style.fontSize || ""; fit($("#q2"), 900); fit($("#word"), 960); fit($("#grade"), 860);
+        fit($("#ctaText"), 800); fit($("#url"), 960); fit($("#lab1"), 960); fit($("#lab2"), 960);
+        document.querySelectorAll(".fbText").forEach((e) => fit(e, 680));
+
+        // ---- build row
+        const build = $("#build"), items = [];
+        let mode = V.build || "wave";
+        const N = 24, W = 18, GAP = 14, x0 = (1080 - (N * W + (N - 1) * GAP)) / 2;
+        const amp = (i, k) => { const v = Math.abs(Math.sin(i * 0.9 + k * 1.7) * 0.6 + Math.sin(i * 0.37 - k * 2.3) * 0.4); const env = Math.sin(((i + 0.5) / N) * Math.PI); return 0.08 + 0.92 * v * (0.35 + 0.65 * env); };
+        if (mode === "wave") {
+          for (let i = 0; i < N; i++) { const b = document.createElement("i"); b.className = "bar"; b.style.left = x0 + i * (W + GAP) + "px"; build.appendChild(b); items.push(b); }
+        } else if (mode === "sheets") {
+          const names = ["지문", "문제", "해설", "학습지"];
+          names.forEach((n, i) => { const s = document.createElement("div"); s.className = "sheet"; s.style.left = 90 + i * 225 + "px"; s.innerHTML = "<b>" + n + "</b><i></i><i style='width:80%'></i><i></i><i style='width:60%'></i>"; build.appendChild(s); items.push(s); });
+        } else {
+          const days = ["월", "화", "수", "목", "금", "토", "일"];
+          days.forEach((d, i) => { const s = document.createElement("div"); s.className = "day"; s.style.left = 55 + i * 142 + "px"; s.innerHTML = d + '<span class="dot">' + ICON.check.replace('stroke-dashoffset="70"', 'stroke-dashoffset="0"').replace('width="64" height="64"', 'width="54" height="54"') + "</span>"; s.querySelector(".dot").style.color = V.ink; build.appendChild(s); items.push(s); });
+        }
+
+        const tl = gsap.timeline({ paused: true, defaults: { ease: "power3.out" } });
+        tl.fromTo("#iris", { xPercent: -50, yPercent: -50 }, { xPercent: -50, yPercent: -50, duration: 0.01 }, 0);
+
+        // camera + parallax (always alive)
+        tl.fromTo("#world", { scale: 1.0 }, { scale: 1.045, duration: 15, ease: "sine.inOut" }, 0);
+        tl.fromTo("#bgGrid", { y: 0, x: 0 }, { y: -110, x: -30, duration: 15, ease: "sine.inOut" }, 0);
+        tl.fromTo("#blob1", { x: 0, y: 0 }, { x: -160, y: 220, duration: 15, ease: "sine.inOut" }, 0);
+        tl.fromTo("#blob2", { x: 0, y: 0 }, { x: 180, y: -260, duration: 15, ease: "sine.inOut" }, 0);
+        tl.fromTo("#bg", { scale: 1 }, { scale: 1.12, duration: at(8), ease: "power2.in" }, at(8));
+        tl.to("#bg", { scale: 1.0, duration: at(2), ease: "back.out(1.6)" }, at(16));
+
+        // S1 hook
+        tl.fromTo("#hookBig", { scale: 1.18, filter: "blur(6px)", opacity: 0.85 }, { scale: 1, filter: "blur(0px)", opacity: 1, duration: 0.55, ease: "back.out(2.2)" }, 0);
+        if (+V.hookCount > 0) {
+          const o = { v: 0 }, fmt = (n) => Math.round(n).toLocaleString("en-US") + (V.hookUnit || "");
+          tl.fromTo(o, { v: +V.hookCount * 0.93 }, { v: +V.hookCount, duration: 0.5, ease: "expo.out", onUpdate: () => { $("#hookText").textContent = fmt(o.v); } }, 0);
+        }
+        tl.fromTo("#hookSmall", { y: 40, opacity: 0, filter: "blur(8px)" }, { y: 0, opacity: 1, filter: "blur(0px)", duration: 0.45, ease: "back.out(1.8)" }, at(1));
+        tl.fromTo("#hookMark", { scaleX: 0 }, { scaleX: 1, duration: 0.42, ease: "expo.inOut" }, at(2));
+        tl.to("#hookBig", { scale: 1.04, duration: at(2), ease: "sine.inOut" }, 0.6);
+        tl.to(["#hookSmall", "#hookBigWrap"], { y: 24, duration: 0.16, ease: "power2.out" }, at(4) - 0.2);
+        tl.to(["#hookSmall", "#hookBigWrap"], { y: -900, filter: "blur(24px)", opacity: 0, duration: 0.3, ease: "power4.in", stagger: 0.03 }, at(4) - 0.04);
+
+        // S2 question
+        tl.fromTo("#q1", { y: 700, filter: "blur(24px)", opacity: 0 }, { y: 0, filter: "blur(0px)", opacity: 1, duration: 0.55, ease: "back.out(1.4)" }, at(4) - 0.06);
+        tl.fromTo("#q2", { y: 700, filter: "blur(24px)", opacity: 0 }, { y: 0, filter: "blur(0px)", opacity: 1, duration: 0.55, ease: "back.out(1.4)" }, at(4) + 0.04);
+        tl.fromTo("#hl", { scaleX: 0 }, { scaleX: 1, duration: 0.45, ease: "expo.inOut" }, at(5));
+        tl.fromTo("#q2Box", { scale: 1 }, { scale: 1.05, duration: at(2.3), ease: "sine.inOut" }, at(5.3));
+        tl.to(["#q1", "#q2"], { opacity: 0, y: -60, filter: "blur(14px)", duration: 0.22, ease: "power3.in" }, at(8) - 0.5);
+        tl.to("#q2Box", { scale: 1, duration: 0.12, ease: "power2.in" }, at(8) - 0.42);
+        const q2Box = $("#q2Box");
+        // highlight box becomes the next scene's object (circle or input bar)
+        const tw = isBar ? 860 : 260, th = isBar ? 150 : 260, tr = isBar ? "40px" : "130px";
+        tl.to("#hl", { duration: 0.36, ease: "power4.inOut", width: tw, height: th, borderRadius: tr,
+          x: () => 540 - tw / 2 - q2Box.offsetLeft, y: () => 770 - th / 2 - (850 + q2Box.offsetTop) }, at(8) - 0.33);
+
+        // S3 object + build
+        tl.set(["#micWrap", "#barWrap"], { opacity: 0 }, 0);
+        tl.set(["#micWrap", "#barWrap"], { opacity: 1 }, at(8) + 0.05);
+        tl.set("#hl", { opacity: 0 }, at(8) + 0.06);
+        tl.set(".ring", { opacity: 0 }, 0);
+        if (!isBar) {
+          tl.fromTo("#mic svg", { scale: 0, rotation: -30 }, { scale: 1, rotation: 0, duration: 0.5, ease: "back.out(2.4)" }, at(8));
+          for (let k = 0; k < 8; k++) {
+            tl.fromTo(k % 2 ? "#ring2" : "#ring1", { scale: 1, opacity: 0.7 }, { scale: 1.9, opacity: 0, duration: at(2), ease: "power2.out" }, at(8 + k));
+            tl.fromTo("#mic", { scale: 1.08 }, { scale: 1, duration: at(1), ease: "power3.out" }, at(8 + k));
+          }
+        } else {
+          tl.fromTo("#barWrap", { scale: 1.06 }, { scale: 1, duration: 0.4, ease: "back.out(2.5)" }, at(8));
+          const txt = V.objText || "", n = txt.length;
+          tl.set("#barText", { textContent: "" }, 0);
+          for (let c = 1; c <= n; c++) tl.set("#barText", { textContent: txt.slice(0, c) }, at(8.5) + (c - 1) * (at(3) / Math.max(1, n)));
+          for (let k = 0; k < 14; k++) tl.fromTo("#caret", { opacity: 1 }, { opacity: 0, duration: 0.01 }, at(8 + k * 0.5 + 0.25)), tl.set("#caret", { opacity: 1 }, at(8.5 + k * 0.5));
+          for (let k = 0; k < 8; k++) tl.fromTo("#barWrap", { y: -6 }, { y: 0, duration: at(1), ease: "power3.out" }, at(8 + k));
+        }
+        tl.fromTo("#lab1", { y: 50, opacity: 0, filter: "blur(10px)" }, { y: 0, opacity: 1, filter: "blur(0px)", duration: 0.45, ease: "back.out(1.7)" }, at(8.5));
+        tl.set(items, { opacity: 0 }, 0);
+        if (mode === "wave") {
+          tl.set(items, { scaleY: 0.03 }, 0); tl.set(items, { opacity: 1 }, at(9));
+          items.forEach((b, i) => tl.fromTo(b, { scaleY: 0.03 }, { scaleY: amp(i, 0), duration: 0.4, ease: "back.out(2)" }, at(9) + i * 0.012));
+          for (let k = 1; k < 13; k++) { const g = k < 6 ? 0.75 : 0.75 + (k - 6) * 0.05; items.forEach((b, i) => tl.to(b, { scaleY: Math.min(1, amp(i, k) * g + 0.06), duration: at(0.5) * 0.9, ease: "power2.out" }, at(9 + k * 0.5))); }
+        } else if (mode === "sheets") {
+          items.forEach((s, i) => tl.fromTo(s, { opacity: 0, y: 200, rotation: 8 - i * 4 }, { opacity: 1, y: 0, rotation: -3 + i * 2, duration: 0.5, ease: "back.out(1.8)" }, at(9 + i)));
+          for (let k = 13; k < 16; k++) items.forEach((s, i) => tl.fromTo(s, { y: -18 }, { y: 0, duration: at(0.5), ease: "power3.out" }, at(k) + i * 0.03));
+        } else {
+          items.forEach((d, i) => {
+            tl.fromTo(d, { opacity: 0, scale: 0.6 }, { opacity: 1, scale: 1, duration: 0.35, ease: "back.out(2)" }, at(9) + i * 0.05);
+            tl.fromTo(d.querySelector(".dot"), { scale: 0 }, { scale: 1, duration: 0.35, ease: "back.out(3)" }, at(9.5 + i));
+          });
+          tl.set(".day .dot", { scale: 0 }, 0);
+        }
+        tl.to("#lab1", { y: -50, opacity: 0, filter: "blur(10px)", duration: 0.25, ease: "power3.in" }, at(12) - 0.25);
+        tl.fromTo("#lab2", { y: 50, opacity: 0, filter: "blur(10px)" }, { y: 0, opacity: 1, filter: "blur(0px)", duration: 0.45, ease: "back.out(1.7)" }, at(12));
+        tl.fromTo("#s3", { scale: 1 }, { scale: 1.1, duration: at(4), ease: "power2.in" }, at(12));
+        // pre-drop suck-in, then collapse into the result
+        tl.to(items, { scale: 0.85, duration: 0.12, ease: "power2.in" }, at(16) - 0.12);
+        tl.to("#lab2", { opacity: 0, y: -80, filter: "blur(16px)", duration: 0.25, ease: "power3.in" }, at(16) - 0.2);
+        tl.to(["#micWrap", "#barWrap"], { y: -500, scale: 0.4, opacity: 0, filter: "blur(20px)", duration: 0.2, ease: "power4.in" }, at(16) - 0.14);
+        tl.to(items, { x: (i, el) => (540 - (el.offsetLeft + el.offsetWidth / 2)) * 0.6, y: -160, scaleY: 0.13, opacity: 0, duration: 0.16, ease: "power4.in" }, at(16) - 0.12);
+        tl.set("#s3", { opacity: 0 }, at(16) + 0.1);
+
+        // S4 result (steps on beats 16, 16.5, 17, 17.5 — matched by ticks + ding in the soundtrack)
+        tl.fromTo(["#track", "#chart"], { scaleX: 0.2, opacity: 0 }, { scaleX: 1, opacity: 1, duration: 0.35, ease: "expo.out" }, at(16));
+        tl.fromTo("#gradeCard", { scale: 1.25, filter: "blur(16px)", opacity: 0 }, { scale: 1, filter: "blur(0px)", opacity: 1, duration: 0.5, ease: "back.out(1.6)" }, at(16) + 0.02);
+        tl.fromTo("#gradeKicker", { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.3 }, at(16) + 0.05);
+        tl.fromTo(".tick", { opacity: 0, y: 16 }, { opacity: 1, y: 0, duration: 0.3, stagger: 0.05 }, at(16) + 0.1);
+        tl.set("#fill", { scaleX: 0 }, 0);
+        const path = $("#chartPath"), L = path.getTotalLength();
+        tl.set(path, { attr: { "stroke-dasharray": L, "stroke-dashoffset": L } }, 0);
+        const fills = [0.3, 0.4, 0.52, 0.72];
+        steps.slice(0, 4).forEach((g, k) => {
+          const t = at(16 + k * 0.5), last = k === Math.min(3, steps.length - 1);
+          tl.set("#grade", { textContent: g }, t);
+          tl.fromTo("#grade", { scale: last ? 1.35 : 1.12, y: -6 }, { scale: 1, y: 0, duration: last ? 0.55 : 0.2, ease: last ? "back.out(3)" : "power3.out" }, t);
+          tl.to("#fill", { scaleX: fills[k], duration: 0.2, ease: "power3.out" }, t);
+          tl.to(path, { attr: { "stroke-dashoffset": L * (1 - (k + 1) / 4) }, duration: 0.3, ease: "power2.out" }, t);
+        });
+        tl.fromTo("#official", { opacity: 0, y: 40, filter: "blur(8px)" }, { opacity: 1, y: 0, filter: "blur(0px)", duration: 0.4, ease: "back.out(1.6)" }, at(18));
+        tl.fromTo("#toAL", { opacity: 0, x: -40 }, { opacity: 1, x: 0, duration: 0.4, ease: "back.out(2)" }, at(18.5));
+        tl.fromTo("#toAL", { scale: 1 }, { scale: 1.05, duration: at(1), ease: "sine.inOut", repeat: 1, yoyo: true, immediateRender: false }, at(19));
+
+        // S5 features
+        tl.to("#official", { opacity: 0, y: 40, duration: 0.25, ease: "power3.in" }, at(20) - 0.2);
+        tl.to("#gradeCard", { y: -330, scale: 0.72, duration: 0.5, ease: "back.inOut(1.4)" }, at(20) - 0.12);
+        tl.to(["#track", "#chart", ".tick", "#toAL"], { opacity: 0, duration: 0.25 }, at(20) - 0.12);
+        [["#fb1", 20], ["#fb2", 22]].forEach(([id, b]) => {
+          tl.fromTo(id, { y: 520, rotation: 4, opacity: 0 }, { y: 0, rotation: 0, opacity: 1, duration: 0.5, ease: "back.out(1.5)" }, at(b) - 0.05);
+          tl.fromTo(id + " .fbIcon", { scale: 0 }, { scale: 1, duration: 0.4, ease: "back.out(3)" }, at(b) + 0.2);
+          if (document.querySelector(id + " .chk")) tl.to(id + " .chk", { attr: { "stroke-dashoffset": 0 }, duration: 0.35, ease: "power2.inOut" }, at(b) + 0.35);
+          tl.to(id, { y: -14, duration: at(2), ease: "sine.inOut" }, at(b + 1));
+        });
+        tl.to(["#gradeCard", "#fb1", "#fb2"], { scale: 0.88, filter: "blur(10px)", opacity: 0.25, duration: at(1.5), ease: "power2.in" }, at(24));
+
+        // iris → end card (reveal on beat 26)
+        tl.fromTo("#iris", { scale: 0 }, { scale: 3, duration: at(1), ease: "back.out(2)" }, at(25));
+        tl.to("#iris", { scale: 110, duration: at(0.5), ease: "power3.in" }, at(25.5));
+        tl.set(["#s4", "#s5"], { opacity: 0 }, at(26));
+        tl.set("#iris", { scale: 1, width: "4400px", height: "4400px", borderRadius: "2200px" }, at(26));
+        tl.to("#iris", { width: "860px", height: "150px", borderRadius: "75px", duration: 0.6, ease: "expo.out" }, at(26) + 0.03);
+        tl.fromTo("#word", { scale: 1.5, opacity: 0, filter: "blur(20px)" }, { scale: 1, opacity: 1, filter: "blur(0px)", duration: 0.6, ease: "back.out(1.8)" }, at(26) + 0.15);
+        tl.fromTo("#ctaText", { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.35 }, at(26) + 0.35);
+        tl.fromTo("#sub", { y: 30, opacity: 0 }, { y: 0, opacity: 1, duration: 0.4, ease: "back.out(1.6)" }, at(27));
+        tl.fromTo(".chip", { y: 30, opacity: 0, scale: 0.8 }, { y: 0, opacity: 1, scale: 1, duration: 0.4, ease: "back.out(2.4)", stagger: 0.1 }, at(27.5));
+        tl.fromTo("#url", { opacity: 0 }, { opacity: 1, duration: 0.4 }, at(28));
+        [28, 30].forEach((bt) => tl.fromTo(["#iris", "#ctaText"], { scale: 1.06 }, { scale: 1, duration: at(1.5), ease: "elastic.out(1, 0.5)" }, at(bt)));
+        tl.fromTo("#word", { scale: 1 }, { scale: 1.03, duration: 2.2, ease: "sine.inOut", immediateRender: false }, at(27.5));
+
+        tl.seek(0);
+        window.__timelines = window.__timelines || {};
+        window.__timelines["main"] = tl;
+      })();
+    </script>
+  </body>
+</html>

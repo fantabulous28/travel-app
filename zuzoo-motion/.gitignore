@@ -1,0 +1,4 @@
+node_modules
+out/
+# 유료 폰트(온글잎 박다현체)는 라이선스상 저장소에 올리지 않음 — assets/fonts/OwnglyphPDH.ttf 로 직접 넣어 사용
+assets/fonts/*.ttf

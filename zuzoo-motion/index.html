@@ -1,0 +1,433 @@
+<!doctype html>
+<html
+  lang="ko"
+  data-resolution="portrait"
+  data-composition-variables='[
+    {"id":"bg","type":"color","label":"Background","default":"#faf6ef"},
+    {"id":"ink","type":"color","label":"Ink","default":"#4a3728"},
+    {"id":"muted","type":"color","label":"Muted","default":"#8c7a68"},
+    {"id":"accent","type":"color","label":"Accent","default":"#ff7f50"},
+    {"id":"track","type":"color","label":"Track","default":"#eadfd2"},
+    {"id":"up","type":"color","label":"Price up","default":"#ee4b5a"},
+    {"id":"userName","type":"string","label":"Profile name","default":"갓생토끼"},
+    {"id":"sample","type":"string","label":"Corner label","default":"제안용 시안"}
+  ]'
+>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1080, height=1920" />
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <style>
+      @font-face { font-family: "OwnglyphPDH"; src: url("assets/fonts/OwnglyphPDH.ttf") format("truetype"); }
+      :root { --bg: #faf6ef; --ink: #4a3728; --muted: #8c7a68; --accent: #ff7f50; --track: #eadfd2; --up: #ee4b5a; --down: #5b8def; --pink: #ff8fa3; }
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      html, body { width: 1080px; height: 1920px; overflow: hidden; background: var(--bg); }
+      #root {
+        position: relative; width: 1080px; height: 1920px; overflow: hidden; background: var(--bg); color: var(--ink);
+        font-family: "OwnglyphPDH", sans-serif; font-synthesis: none; letter-spacing: -0.02em; word-break: keep-all;
+      }
+      .layer, .clip { position: absolute; inset: 0; }
+      .center-x { position: absolute; left: 0; right: 0; text-align: center; white-space: nowrap; }
+      .bold { -webkit-text-stroke: 2.2px currentColor; }
+      svg { display: block; }
+
+      /* background */
+      #bgGrid { position: absolute; left: -120px; top: -120px; width: 1320px; height: 2160px; opacity: 0.5; }
+      .blob { position: absolute; border-radius: 50%; background: var(--accent); }
+      #blob1 { width: 900px; height: 900px; left: 520px; top: -260px; opacity: 0.12; filter: blur(40px); }
+      #blob2 { width: 700px; height: 700px; left: -320px; top: 1360px; opacity: 0.10; filter: blur(34px); }
+      #sample { position: absolute; left: 0; right: 60px; top: 110px; bottom: auto; text-align: right; font-size: 32px; color: var(--muted); }
+
+      /* S1 hook */
+      #habits { position: absolute; left: 0; right: 0; top: 560px; display: flex; justify-content: center; gap: 22px; }
+      .habit { display: flex; align-items: center; gap: 14px; padding: 18px 36px 18px 26px; border-radius: 999px; background: #fff; font-size: 54px; box-shadow: 0 14px 36px rgba(74,55,40,0.10); white-space: nowrap; }
+      .habit i { width: 64px; height: 64px; border-radius: 50%; background: var(--accent); display: flex; align-items: center; justify-content: center; color: #fff; }
+      #h1a { top: 790px; font-size: 112px; line-height: 140px; }
+      #h1bWrap { position: absolute; left: 0; right: 0; top: 940px; text-align: center; }
+      #h1b { display: inline-block; position: relative; font-size: 200px; line-height: 240px; white-space: nowrap; }
+      #h1b .hi { position: relative; display: inline-block; }
+      #h1mark { position: absolute; left: -16px; right: -16px; top: 168px; height: 52px; border-radius: 26px; background: var(--accent); opacity: 0.55; transform-origin: 0% 50%; z-index: -1; }
+      #h1bText { position: relative; }
+
+      /* S2 */
+      #q1 { top: 700px; font-size: 112px; line-height: 140px; }
+      #q2Wrap { position: absolute; left: 0; right: 0; top: 870px; text-align: center; }
+      #q2Box { display: inline-block; position: relative; padding: 4px 44px 18px; }
+      #q2hl { position: absolute; inset: 0; background: var(--accent); border-radius: 30px; transform-origin: 0% 50%; }
+      #q2 { position: relative; font-size: 140px; line-height: 170px; white-space: nowrap; color: #fff; }
+      #upArrow { position: absolute; left: 0; right: 0; top: 1150px; display: flex; justify-content: center; color: var(--up); }
+
+      /* S3 */
+      #k3a, #k3b { top: 380px; font-size: 92px; line-height: 120px; }
+      #goal { position: absolute; left: 140px; top: 640px; width: 800px; height: 300px; border-radius: 44px; background: #fff; box-shadow: 0 24px 60px rgba(74,55,40,0.12); padding: 44px 56px; }
+      #goal .lab { font-size: 42px; color: var(--muted); }
+      #goal .ttl { margin-top: 18px; font-size: 76px; white-space: nowrap; display: flex; align-items: center; gap: 22px; }
+      #goal .ttl i { width: 78px; height: 78px; border-radius: 50%; background: var(--accent); display: flex; align-items: center; justify-content: center; color: #fff; flex: none; }
+      #camWrap { position: absolute; left: 400px; top: 690px; width: 280px; height: 280px; }
+      #camRing { position: absolute; left: -40px; top: -40px; width: 360px; height: 360px; transform: rotate(-90deg); }
+      #cam { position: absolute; inset: 0; border-radius: 50%; background: var(--accent); display: flex; align-items: center; justify-content: center; color: #fff; }
+      #flash { position: absolute; inset: 0; border-radius: 50%; background: #fff; opacity: 0; }
+      #tlLabel { position: absolute; left: 0; right: 0; top: 1040px; text-align: center; font-size: 46px; color: var(--muted); white-space: nowrap; }
+      #tlLabel b { font-weight: normal; color: var(--up); }
+      #days { position: absolute; left: 0; right: 0; top: 1200px; height: 160px; }
+      .day { position: absolute; top: 20px; width: 112px; height: 112px; border-radius: 50%; border: 6px solid var(--track); display: flex; align-items: center; justify-content: center; font-size: 44px; color: var(--muted); background: var(--bg); }
+      .day .dot { position: absolute; inset: -6px; border-radius: 50%; background: var(--accent); display: flex; align-items: center; justify-content: center; color: #fff; }
+
+      /* S4 stock screen */
+      #card { position: absolute; left: 70px; top: 250px; width: 940px; height: 1290px; border-radius: 56px; overflow: hidden; box-shadow: 0 40px 90px rgba(74,55,40,0.18);
+        background: linear-gradient(180deg, #fbe9dc 0%, #f9e2d6 55%, #f6d2c6 100%); }
+      #cardIn { position: absolute; inset: 0; padding: 56px 60px; }
+      #prof { display: flex; align-items: center; gap: 28px; }
+      #avatar { width: 128px; height: 128px; border-radius: 50%; overflow: hidden; background: #fff; border: 6px solid #fff; box-shadow: 0 8px 20px rgba(74,55,40,0.12); flex: none; position: relative; }
+      #avatar img { position: absolute; width: 287px; left: -57px; top: -132px; }
+      #pname { font-size: 76px; white-space: nowrap; }
+      #share { margin-left: auto; color: var(--muted); }
+      #badges { display: flex; gap: 16px; margin-top: 34px; }
+      .badge { font-size: 40px; padding: 8px 28px 10px; border-radius: 18px; white-space: nowrap; color: #fff; }
+      #price { margin-top: 26px; font-size: 150px; line-height: 170px; white-space: nowrap; font-variant-numeric: tabular-nums; }
+      #chg { font-size: 56px; color: var(--up); white-space: nowrap; font-variant-numeric: tabular-nums; }
+      #stats { margin-top: 30px; height: 112px; border-radius: 30px; background: rgba(255,255,255,0.78); display: flex; align-items: center; justify-content: space-around; padding: 0 18px; font-size: 42px; }
+      .st { display: flex; align-items: center; gap: 10px; white-space: nowrap; }
+      .st svg { color: var(--ink); }
+      .st.gold svg { color: #e0a72a; }
+      #tabs { display: flex; gap: 22px; margin-top: 34px; }
+      .tab { font-size: 42px; padding: 8px 30px 10px; border-radius: 999px; background: rgba(255,255,255,0.6); color: var(--muted); }
+      .tab.on { background: var(--ink); color: #fff; }
+      #chartBox { position: absolute; left: 60px; top: 840px; width: 820px; height: 400px; }
+      #chart { position: absolute; inset: 0; overflow: visible; }
+      .cl { position: absolute; left: 0; font-size: 34px; }
+      #clTop { color: var(--up); top: 8px; }
+      #clBot { color: var(--down); bottom: -48px; }
+      #headDot { position: absolute; left: 0; top: 0; width: 34px; height: 34px; margin: -17px 0 0 -17px; border-radius: 50%; background: var(--up); border: 7px solid #fff; box-shadow: 0 0 0 10px rgba(238,75,90,0.18); }
+      #foot { top: 1590px; font-size: 36px; color: var(--muted); }
+
+      /* S5 */
+      #k5 { top: 340px; font-size: 104px; line-height: 130px; }
+      #k5 .hi { position: relative; display: inline-block; }
+      #k5mark { position: absolute; left: -10px; right: -10px; top: 84px; height: 40px; border-radius: 20px; background: var(--accent); opacity: 0.55; transform-origin: 0% 50%; z-index: -1; }
+      #k5 span.t { position: relative; }
+      .fb { position: absolute; left: 110px; width: 860px; height: 180px; border-radius: 40px; background: #fff; box-shadow: 0 24px 60px rgba(74,55,40,0.12); display: flex; align-items: center; padding: 0 48px; gap: 36px; }
+      #fb1 { top: 620px; } #fb2 { top: 840px; }
+      .fbIcon { width: 104px; height: 104px; flex: none; border-radius: 50%; background: var(--accent); display: flex; align-items: center; justify-content: center; color: #fff; }
+      .fbText { font-size: 70px; white-space: nowrap; }
+      .fbText b { font-weight: normal; color: var(--accent); }
+      #pair { position: absolute; left: 0; right: 0; top: 1130px; height: 420px; }
+      .pav { position: absolute; top: 120px; width: 200px; height: 200px; border-radius: 50%; border: 8px solid #fff; box-shadow: 0 16px 40px rgba(74,55,40,0.14); overflow: hidden; }
+      #pavA { left: 170px; background: #fff; } #pavB { left: 710px; background: #ffe2d4; }
+      #pavA img { position: absolute; width: 430px; left: -80px; top: -193px; }
+      #pavB svg { position: absolute; left: 0; top: 0; }
+      .pl { position: absolute; top: 340px; width: 300px; text-align: center; font-size: 44px; color: var(--muted); white-space: nowrap; }
+      #plA { left: 120px; } #plB { left: 660px; }
+      #arcs { position: absolute; left: 0; top: 0; width: 1080px; height: 420px; overflow: visible; }
+      .coin { position: absolute; left: 0; top: 0; width: 64px; height: 64px; margin: -32px 0 0 -32px; border-radius: 50%; background: #ffc94d; border: 5px solid #e0a72a; color: #9a6b0c; font-size: 34px; display: flex; align-items: center; justify-content: center; }
+      .arcLab { position: absolute; font-size: 40px; white-space: nowrap; }
+      #alTop { left: 0; right: 0; top: 18px; text-align: center; color: var(--accent); }
+      #alBot { left: 0; right: 0; top: 300px; text-align: center; color: #c48a14; }
+
+      /* S6 end card */
+      #iris { position: absolute; left: 540px; top: 1240px; width: 40px; height: 40px; border-radius: 20px; background: var(--accent); }
+      #logo { position: absolute; left: 190px; top: 300px; width: 700px; }
+      #brand { top: 610px; font-size: 76px; }
+      #tag { top: 730px; font-size: 118px; line-height: 140px; }
+      #chips { position: absolute; left: 0; right: 0; top: 920px; display: flex; justify-content: center; gap: 22px; }
+      .chip { font-size: 50px; padding: 14px 40px 18px; border-radius: 999px; border: 5px solid var(--ink); white-space: nowrap; background: var(--bg); }
+      #ctaText { position: absolute; left: 0; right: 0; top: 1176px; text-align: center; font-size: 72px; line-height: 128px; color: #fff; white-space: nowrap; }
+      #bunny { position: absolute; left: 230px; top: 1330px; width: 680px; }
+    </style>
+  </head>
+  <body>
+    <div id="root" data-composition-id="main" data-start="0" data-duration="18.75" data-width="1080" data-height="1920">
+      <div id="world" class="layer">
+        <div id="bg" class="layer">
+          <svg id="bgGrid" viewBox="0 0 1320 2160" xmlns="http://www.w3.org/2000/svg">
+            <defs><pattern id="dots" width="60" height="60" patternUnits="userSpaceOnUse"><circle id="dotc" cx="30" cy="30" r="3" fill="#4a3728" opacity="0.16" /></pattern></defs>
+            <rect width="1320" height="2160" fill="url(#dots)" />
+          </svg>
+          <div id="blob1" class="blob"></div>
+          <div id="blob2" class="blob"></div>
+        </div>
+
+        <!-- S1 · 공부, 운동, 미라클모닝 / 내 성실함이 주가라면? -->
+        <div id="s1" class="clip" data-start="0" data-duration="3.1" data-track-index="1">
+          <div id="habits">
+            <span class="habit" id="hb1"><i data-icon="book"></i>공부</span>
+            <span class="habit" id="hb2"><i data-icon="dumbbell"></i>운동</span>
+            <span class="habit" id="hb3"><i data-icon="sun"></i>미라클모닝</span>
+          </div>
+          <div id="h1a" class="center-x bold">내 성실함이</div>
+          <div id="h1bWrap"><span id="h1b" class="bold"><span class="hi"><i id="h1mark"></i><span id="h1bText">주가</span></span>라면?</span></div>
+        </div>
+
+        <!-- S2 · 인증할수록 / 내 주가가 오른다 -->
+        <div id="s2" class="clip" data-start="2.6" data-duration="2.3" data-track-index="2">
+          <div id="q1" class="center-x bold">인증할수록</div>
+          <div id="q2Wrap"><span id="q2Box"><i id="q2hl"></i><span id="q2" class="bold">내 주가가 오른다</span></span></div>
+          <div id="upArrow"><svg width="150" height="170" viewBox="0 0 150 170"><path d="M75 8 L142 92 H100 V162 H50 V92 H8 Z" fill="currentColor" stroke="currentColor" stroke-width="10" stroke-linejoin="round"/></svg></div>
+        </div>
+
+        <!-- S3 · 목표를 정하고, / 매일 사진·타임랩스로 인증 -->
+        <div id="s3" class="clip" data-start="4.5" data-duration="3.7" data-track-index="3">
+          <div id="k3a" class="center-x bold">목표를 정하고,</div>
+          <div id="k3b" class="center-x bold">매일 사진·타임랩스로 인증</div>
+          <div id="goal"><div class="lab">나의 목표</div><div class="ttl"><i data-icon="sun"></i>매일 아침 6시 기상</div></div>
+          <div id="camWrap">
+            <svg id="camRing" viewBox="0 0 360 360"><circle cx="180" cy="180" r="168" fill="none" stroke="var(--track)" stroke-width="14"/><circle id="camProg" cx="180" cy="180" r="168" fill="none" stroke="var(--up)" stroke-width="14" stroke-linecap="round" stroke-dasharray="1055.6" stroke-dashoffset="1055.6"/></svg>
+            <div id="cam"><span data-icon="camera"></span><i id="flash"></i></div>
+          </div>
+          <div id="tlLabel"><b>●</b> 타임랩스 촬영 중</div>
+          <div id="days"></div>
+        </div>
+
+        <!-- S4 · 주가 화면 (예시 문구 없이) -->
+        <div id="s4" class="clip" data-start="7.75" data-duration="5.0" data-track-index="4">
+          <div id="card">
+            <div id="cardIn">
+              <div id="prof">
+                <div id="avatar"><img src="assets/bunny-cut.png" alt="" /></div>
+                <div id="pname"></div>
+                <div id="share"><span data-icon="share"></span></div>
+              </div>
+              <div id="badges"><span class="badge" style="background: var(--pink)">성실한</span><span class="badge" style="background: var(--accent)">21일 연속</span></div>
+              <div id="price">10만원</div>
+              <div id="chg">▲ 0만원 (0.00%)</div>
+              <div id="stats">
+                <span class="st"><span data-icon="book"></span>3권</span>
+                <span class="st"><span data-icon="pulse"></span>1km</span>
+                <span class="st"><span data-icon="dumbbell"></span>1일</span>
+                <span class="st"><span data-icon="pencil"></span>3일</span>
+                <span class="st gold"><span data-icon="trophy"></span>21완주</span>
+              </div>
+              <div id="tabs"><span class="tab">1D</span><span class="tab">1W</span><span class="tab">1M</span><span class="tab on">ALL</span></div>
+            </div>
+            <div id="chartBox">
+              <svg id="chart" viewBox="0 0 820 400">
+                <defs>
+                  <linearGradient id="fillGrad" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ee4b5a" stop-opacity="0.32"/><stop offset="1" stop-color="#ee4b5a" stop-opacity="0.02"/></linearGradient>
+                  <clipPath id="reveal"><rect id="revealRect" x="0" y="-20" width="0" height="440"/></clipPath>
+                </defs>
+                <line id="lnTop" x1="0" x2="820" stroke="#ee4b5a" stroke-width="3" stroke-dasharray="12 10" opacity="0.6"/>
+                <line id="lnBot" x1="0" x2="820" stroke="#5b8def" stroke-width="3" stroke-dasharray="12 10" opacity="0.6"/>
+                <path id="area" fill="url(#fillGrad)" clip-path="url(#reveal)"/>
+                <path id="line" fill="none" stroke="#ee4b5a" stroke-width="7" stroke-linejoin="round" stroke-linecap="round"/>
+              </svg>
+              <div class="cl" id="clTop">185만원</div>
+              <div class="cl" id="clBot">10만원</div>
+              <i id="headDot"></i>
+            </div>
+          </div>
+          <div id="foot" class="center-x">* 앱 내 재화는 모두 가상화폐입니다.</div>
+        </div>
+
+        <!-- S5 · 서로가 서로의 주주 / 응원은 투자로 / 보답은 배당으로 -->
+        <div id="s5" class="clip" data-start="12.35" data-duration="3.2" data-track-index="5">
+          <div id="k5" class="center-x bold">서로가 서로의 <span class="hi"><i id="k5mark"></i><span class="t">주주</span></span></div>
+          <div id="fb1" class="fb"><div class="fbIcon"><span data-icon="heart"></span></div><div class="fbText">응원은 <b>투자</b>로</div></div>
+          <div id="fb2" class="fb"><div class="fbIcon"><span data-icon="coin"></span></div><div class="fbText">보답은 <b>배당</b>으로</div></div>
+          <div id="pair">
+            <svg id="arcs" viewBox="0 0 1080 420">
+              <path id="arcTop" d="M290 160 Q540 10 810 160" fill="none" stroke="var(--accent)" stroke-width="6" stroke-dasharray="14 12" stroke-linecap="round"/>
+              <path id="arcBot" d="M810 290 Q540 440 290 290" fill="none" stroke="#e0a72a" stroke-width="6" stroke-dasharray="14 12" stroke-linecap="round"/>
+            </svg>
+            <div class="arcLab" id="alTop">투자</div>
+            <div class="arcLab" id="alBot">배당</div>
+            <div class="pav" id="pavA"><img src="assets/bunny-cut.png" alt="" /></div>
+            <div class="pav" id="pavB"><svg width="184" height="184" viewBox="0 0 184 184"><circle cx="92" cy="80" r="34" fill="#ff9e7a"/><path d="M30 184 a62 62 0 0 1 124 0" fill="#ff9e7a"/></svg></div>
+            <div class="pl" id="plA">나</div>
+            <div class="pl" id="plB">친구</div>
+            <i class="coin" id="coinA">₩</i>
+            <i class="coin" id="coinB">₩</i>
+          </div>
+        </div>
+
+        <!-- S6 · 엔드카드 -->
+        <div id="irisLayer" class="clip" data-start="14.95" data-duration="3.8" data-track-index="6"><i id="iris"></i></div>
+        <div id="s6" class="clip" data-start="15.45" data-duration="3.3" data-track-index="7">
+          <img id="logo" src="assets/zuzoo-logo.png" alt="ZUZOO" />
+          <div id="brand" class="center-x">주주: 루틴 증권</div>
+          <div id="tag" class="center-x bold">우리들의 갓생 차트</div>
+          <div id="chips"><span class="chip" id="chip1">완전 무료</span><span class="chip" id="chip2">iOS · Android</span></div>
+          <img id="bunny" src="assets/bunny-cut.png" alt="" />
+        </div>
+        <div id="ctaLayer" class="clip" data-start="15.45" data-duration="3.3" data-track-index="8"><div id="ctaText" class="bold">스토어에서 ‘주주’ 검색</div></div>
+      </div>
+      <div id="sample" class="clip" data-start="0" data-duration="18.75" data-track-index="9"></div>
+    </div>
+
+    <script>
+      (function () {
+        const V = (window.__hyperframes && window.__hyperframes.getVariables && window.__hyperframes.getVariables()) || {};
+        const D = { bg: "#faf6ef", ink: "#4a3728", muted: "#8c7a68", accent: "#ff7f50", track: "#eadfd2", up: "#ee4b5a", userName: "갓생토끼", sample: "제안용 시안" };
+        Object.keys(D).forEach((k) => V[k] == null && (V[k] = D[k]));
+        const B = 0.46875; // 128 BPM beat grid (40 beats = 18.75s)
+        const at = (beats) => +(beats * B).toFixed(5);
+        const $ = (s) => document.querySelector(s);
+        const $$ = (s) => [...document.querySelectorAll(s)];
+        const root = document.documentElement;
+        ["bg", "ink", "muted", "accent", "track", "up"].forEach((k) => root.style.setProperty("--" + k, V[k]));
+        $("#dotc").setAttribute("fill", V.ink);
+        $("#pname").textContent = V.userName;
+        $("#sample").textContent = V.sample;
+
+        const ICON = {
+          book: '<svg width="40" height="40" viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="4" stroke-linejoin="round"><path d="M7 6 h20 a4 4 0 0 1 4 4 v24 h-20 a4 4 0 0 1 -4 -4 z"/><path d="M7 30 a4 4 0 0 1 4 -4 h20"/></svg>',
+          dumbbell: '<svg width="44" height="40" viewBox="0 0 44 40" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round"><path d="M4 20 h36"/><path d="M10 11 v18 M15 8 v24 M29 8 v24 M34 11 v18"/></svg>',
+          sun: '<svg width="42" height="42" viewBox="0 0 42 42" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round"><circle cx="21" cy="21" r="8"/><path d="M21 3 v5 M21 34 v5 M3 21 h5 M34 21 h5 M8 8 l3.5 3.5 M30.5 30.5 l3.5 3.5 M8 34 l3.5 -3.5 M30.5 11.5 l3.5 -3.5"/></svg>',
+          pulse: '<svg width="44" height="40" viewBox="0 0 44 40" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><path d="M3 22 h9 l5 -12 l8 22 l5 -10 h11"/></svg>',
+          pencil: '<svg width="40" height="40" viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="4" stroke-linejoin="round"><path d="M8 32 l2 -8 l18 -18 l6 6 l-18 18 z"/><path d="M24 10 l6 6"/></svg>',
+          trophy: '<svg width="40" height="40" viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="4" stroke-linejoin="round" stroke-linecap="round"><path d="M12 5 h16 v10 a8 8 0 0 1 -16 0 z"/><path d="M12 9 h-6 a6 6 0 0 0 6 8 M28 9 h6 a6 6 0 0 1 -6 8"/><path d="M20 23 v7 M13 35 h14"/></svg>',
+          share: '<svg width="60" height="60" viewBox="0 0 60 60" fill="none" stroke="currentColor" stroke-width="5"><circle cx="44" cy="12" r="7"/><circle cx="14" cy="30" r="7"/><circle cx="44" cy="48" r="7"/><path d="M20 27 l18 -11 M20 33 l18 11"/></svg>',
+          camera: '<svg width="140" height="120" viewBox="0 0 140 120" fill="none" stroke="currentColor" stroke-width="11" stroke-linejoin="round"><path d="M10 34 h30 l12 -18 h36 l12 18 h30 v76 h-120 z"/><circle cx="70" cy="68" r="24"/></svg>',
+          heart: '<svg width="60" height="56" viewBox="0 0 60 56" fill="currentColor"><path d="M30 52 C10 38 4 28 4 18 A13 13 0 0 1 30 12 A13 13 0 0 1 56 18 C56 28 50 38 30 52 Z"/></svg>',
+          coin: '<svg width="64" height="64" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"><circle cx="32" cy="32" r="25"/><path d="M21 23 l5 18 l6 -13 l6 13 l5 -18"/></svg>',
+          check: '<svg width="56" height="56" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 34 L27 48 L53 18"/></svg>',
+        };
+        $$("[data-icon]").forEach((el) => (el.innerHTML = ICON[el.dataset.icon] || ""));
+
+        // ---- week row
+        const days = ["월", "화", "수", "목", "금", "토", "일"], dayEls = [];
+        days.forEach((d, i) => { const s = document.createElement("div"); s.className = "day"; s.style.left = 51 + i * 142 + "px"; s.innerHTML = d + '<span class="dot">' + ICON.check + "</span>"; $("#days").appendChild(s); dayEls.push(s); });
+
+        // ---- chart data: deterministic, step-like climb 10 → 170 (만원)
+        const CW = 820, CH = 400, VMAX = 200, toY = (v) => CH - (v / VMAX) * CH;
+        let seed = 7; const rnd = () => ((seed = (seed * 16807) % 2147483647) / 2147483647);
+        const N = 96, vals = []; let v = 10;
+        for (let i = 0; i < N; i++) {
+          const p = i / (N - 1), target = 10 + 160 * Math.pow(p, 1.25);
+          v += (target - v) * 0.38 + (rnd() - 0.42) * 5;
+          if (i > 20 && rnd() < 0.07) v += 8 + rnd() * 9;
+          vals.push(Math.max(10, Math.min(186, v)));
+        }
+        vals[0] = 10; vals[N - 1] = 170;
+        let d = "M0 " + toY(vals[0]).toFixed(1);
+        vals.forEach((val, i) => { if (i) d += " H" + ((i / (N - 1)) * CW).toFixed(1) + " V" + toY(val).toFixed(1); });
+        $("#line").setAttribute("d", d);
+        $("#area").setAttribute("d", d + " V" + CH + " H0 Z");
+        $("#lnTop").setAttribute("y1", toY(185)); $("#lnTop").setAttribute("y2", toY(185));
+        $("#lnBot").setAttribute("y1", toY(10)); $("#lnBot").setAttribute("y2", toY(10));
+        const line = $("#line"), L = line.getTotalLength();
+        const fmtChg = (x) => "▲ " + Math.round(x) + "만원 (" + ((Math.round(x) / 10) * 100).toFixed(2) + "%)";
+        const drawTo = (p) => {
+          const pt = line.getPointAtLength(L * p);
+          line.setAttribute("stroke-dashoffset", (L * (1 - p)).toFixed(2));
+          $("#revealRect").setAttribute("width", pt.x.toFixed(1));
+          $("#headDot").style.left = pt.x.toFixed(1) + "px"; $("#headDot").style.top = pt.y.toFixed(1) + "px";
+          const val = Math.round(((CH - pt.y) / CH) * VMAX);
+          $("#price").textContent = val + "만원";
+          $("#chg").textContent = fmtChg(val - 10);
+        };
+        line.setAttribute("stroke-dasharray", L.toFixed(2));
+        drawTo(0);
+
+        const tl = gsap.timeline({ paused: true, defaults: { ease: "power3.out" } });
+        // clip windows (works with or without the HyperFrames runtime)
+        $$(".clip").forEach((c) => {
+          const s = +c.dataset.start, e = s + +c.dataset.duration;
+          tl.set(c, { visibility: s > 0 ? "hidden" : "visible" }, 0);
+          if (s > 0) tl.set(c, { visibility: "visible" }, s);
+          if (e < 18.74) tl.set(c, { visibility: "hidden" }, e);
+        });
+        tl.set("#iris", { xPercent: -50, yPercent: -50 }, 0);
+
+        // camera + parallax
+        tl.fromTo("#world", { scale: 1.0 }, { scale: 1.04, duration: 18.75, ease: "sine.inOut" }, 0);
+        tl.fromTo("#bgGrid", { x: 0, y: 0 }, { x: -30, y: -130, duration: 18.75, ease: "sine.inOut" }, 0);
+        tl.fromTo("#blob1", { x: 0, y: 0 }, { x: -180, y: 260, duration: 18.75, ease: "sine.inOut" }, 0);
+        tl.fromTo("#blob2", { x: 0, y: 0 }, { x: 200, y: -300, duration: 18.75, ease: "sine.inOut" }, 0);
+
+        // ===== S1 (beats 0–6)
+        ["#hb1", "#hb2", "#hb3"].forEach((id, i) => tl.fromTo(id, { y: 60, scale: 0.6, opacity: 0 }, { y: 0, scale: 1, opacity: 1, duration: 0.42, ease: "back.out(2.4)" }, at(i * 0.5)));
+        tl.fromTo("#h1a", { y: 60, opacity: 0, filter: "blur(10px)" }, { y: 0, opacity: 1, filter: "blur(0px)", duration: 0.45, ease: "back.out(1.7)" }, at(2));
+        tl.fromTo("#h1b", { scale: 1.25, opacity: 0, filter: "blur(10px)" }, { scale: 1, opacity: 1, filter: "blur(0px)", duration: 0.5, ease: "back.out(2.2)" }, at(2.5));
+        tl.fromTo("#h1mark", { scaleX: 0 }, { scaleX: 1, duration: 0.4, ease: "expo.inOut" }, at(3.5));
+        tl.fromTo("#h1b", { rotation: 0 }, { rotation: -2, duration: at(2), ease: "sine.inOut" }, at(4));
+        tl.to(["#habits", "#h1a", "#h1bWrap"], { y: -900, opacity: 0, filter: "blur(24px)", duration: 0.3, ease: "power4.in", stagger: 0.03 }, at(6) - 0.3);
+
+        // ===== S2 (beats 6–10)
+        tl.fromTo("#q1", { y: 700, opacity: 0, filter: "blur(24px)" }, { y: 0, opacity: 1, filter: "blur(0px)", duration: 0.5, ease: "back.out(1.4)" }, at(6) - 0.06);
+        tl.fromTo("#q2Box", { y: 700, opacity: 0, filter: "blur(24px)" }, { y: 0, opacity: 1, filter: "blur(0px)", duration: 0.5, ease: "back.out(1.4)" }, at(6) + 0.04);
+        tl.fromTo("#q2hl", { scaleX: 0 }, { scaleX: 1, duration: 0.4, ease: "expo.inOut" }, at(6.5));
+        tl.fromTo("#upArrow", { y: 160, opacity: 0, scale: 0.4 }, { y: 0, opacity: 1, scale: 1, duration: 0.5, ease: "back.out(2.6)" }, at(7.5));
+        tl.fromTo("#upArrow", { y: 0 }, { y: -40, duration: at(1), ease: "sine.inOut", repeat: 1, yoyo: true, immediateRender: false }, at(8));
+        tl.to(["#q1", "#q2Box", "#upArrow"], { y: -700, opacity: 0, filter: "blur(20px)", duration: 0.28, ease: "power4.in", stagger: 0.03 }, at(10) - 0.3);
+
+        // ===== S3 (beats 10–16)
+        tl.fromTo("#k3a", { y: 50, opacity: 0, filter: "blur(10px)" }, { y: 0, opacity: 1, filter: "blur(0px)", duration: 0.45, ease: "back.out(1.7)" }, at(10));
+        tl.fromTo("#goal", { y: 300, rotation: 4, opacity: 0 }, { y: 0, rotation: 0, opacity: 1, duration: 0.5, ease: "back.out(1.6)" }, at(10.5));
+        tl.to("#k3a", { y: -50, opacity: 0, filter: "blur(10px)", duration: 0.22, ease: "power3.in" }, at(12.5) - 0.22);
+        tl.fromTo("#k3b", { y: 50, opacity: 0, filter: "blur(10px)" }, { y: 0, opacity: 1, filter: "blur(0px)", duration: 0.45, ease: "back.out(1.7)" }, at(12.5));
+        tl.to("#goal", { y: -460, scale: 0.6, opacity: 0, filter: "blur(12px)", duration: 0.3, ease: "power3.in" }, at(12.5) - 0.2);
+        tl.fromTo("#camWrap", { scale: 0, rotation: -40, opacity: 0 }, { scale: 1, rotation: 0, opacity: 1, duration: 0.5, ease: "back.out(2.2)" }, at(12.5));
+        tl.fromTo("#tlLabel", { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.3 }, at(13));
+        tl.fromTo("#camProg", { attr: { "stroke-dashoffset": 1055.6 } }, { attr: { "stroke-dashoffset": 0 }, duration: at(3.4), ease: "none" }, at(13));
+        [13, 14, 15].forEach((b) => {
+          tl.fromTo("#flash", { opacity: 0.9 }, { opacity: 0, duration: 0.25, ease: "power2.out", immediateRender: false }, at(b));
+          tl.fromTo("#cam", { scale: 0.9 }, { scale: 1, duration: 0.3, ease: "back.out(3)", immediateRender: false }, at(b));
+        });
+        dayEls.forEach((el, i) => {
+          tl.fromTo(el, { opacity: 0, scale: 0.6 }, { opacity: 1, scale: 1, duration: 0.3, ease: "back.out(2)" }, at(12.5) + i * 0.04);
+          tl.fromTo(el.querySelector(".dot"), { scale: 0 }, { scale: 1, duration: 0.3, ease: "back.out(3)" }, at(13.1 + i * 0.45));
+        });
+        tl.to(["#k3b", "#camWrap", "#tlLabel", "#days"], { y: -600, scale: 0.6, opacity: 0, filter: "blur(20px)", duration: 0.24, ease: "power4.in", stagger: 0.02 }, at(17) - 0.28);
+
+        // ===== S4 stock screen (beats 16–26)
+        tl.fromTo("#card", { y: 260, scale: 0.86, opacity: 0, filter: "blur(16px)" }, { y: 0, scale: 1, opacity: 1, filter: "blur(0px)", duration: 0.6, ease: "back.out(1.5)" }, at(17) - 0.02);
+        tl.fromTo("#avatar", { scale: 0 }, { scale: 1, duration: 0.45, ease: "back.out(2.6)" }, at(17.5));
+        tl.fromTo("#pname", { x: -40, opacity: 0 }, { x: 0, opacity: 1, duration: 0.35 }, at(17.5) + 0.1);
+        tl.fromTo(".badge", { y: 20, opacity: 0 }, { y: 0, opacity: 1, duration: 0.3, stagger: 0.08 }, at(18));
+        tl.fromTo(["#price", "#chg"], { y: 30, opacity: 0 }, { y: 0, opacity: 1, duration: 0.35, stagger: 0.06 }, at(18));
+        tl.fromTo(".st", { y: 20, opacity: 0 }, { y: 0, opacity: 1, duration: 0.3, stagger: 0.05 }, at(18.5));
+        tl.fromTo(".tab", { opacity: 0 }, { opacity: 1, duration: 0.25, stagger: 0.04 }, at(18.5));
+        tl.fromTo(["#lnTop", "#lnBot", ".cl"], { opacity: 0 }, { opacity: 1, duration: 0.3 }, at(19));
+        tl.fromTo("#headDot", { scale: 0 }, { scale: 1, duration: 0.3, ease: "back.out(3)" }, at(19));
+        const prog = { p: 0 };
+        tl.fromTo(prog, { p: 0 }, { p: 1, duration: at(6), ease: "power1.inOut", onUpdate: () => drawTo(prog.p) }, at(19));
+        for (let k = 20; k <= 25; k++) tl.fromTo("#price", { scale: 1.06 }, { scale: 1, duration: at(0.8), ease: "power3.out", transformOrigin: "0% 50%", immediateRender: false }, at(k));
+        tl.fromTo("#price", { scale: 1.16 }, { scale: 1, duration: 0.55, ease: "back.out(3)", transformOrigin: "0% 50%", immediateRender: false }, at(25));
+        tl.fromTo("#foot", { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.4 }, at(21));
+        tl.to("#card", { y: -20, duration: at(4), ease: "sine.inOut" }, at(23));
+
+        // ===== S5 (beats 26–32)
+        tl.to("#foot", { opacity: 0, duration: 0.2 }, at(27) - 0.25);
+        tl.to("#card", { y: -900, scale: 0.7, opacity: 0, filter: "blur(18px)", duration: 0.32, ease: "power4.in" }, at(27) - 0.32);
+        tl.fromTo("#k5", { y: 60, opacity: 0, filter: "blur(10px)" }, { y: 0, opacity: 1, filter: "blur(0px)", duration: 0.45, ease: "back.out(1.7)" }, at(27));
+        tl.fromTo("#k5mark", { scaleX: 0 }, { scaleX: 1, duration: 0.4, ease: "expo.inOut" }, at(27.5));
+        [["#fb1", 28], ["#fb2", 29.5]].forEach(([id, b]) => {
+          tl.fromTo(id, { y: 420, rotation: 4, opacity: 0 }, { y: 0, rotation: 0, opacity: 1, duration: 0.5, ease: "back.out(1.5)" }, at(b) - 0.05);
+          tl.fromTo(id + " .fbIcon", { scale: 0 }, { scale: 1, duration: 0.4, ease: "back.out(3)" }, at(b) + 0.15);
+        });
+        tl.fromTo(["#pavA", "#pavB"], { scale: 0 }, { scale: 1, duration: 0.4, ease: "back.out(2.4)", stagger: 0.08 }, at(28));
+        tl.fromTo([".pl", "#arcs"], { opacity: 0 }, { opacity: 1, duration: 0.3 }, at(28.3));
+        tl.fromTo("#alTop", { opacity: 0, y: 10 }, { opacity: 1, y: 0, duration: 0.3 }, at(28.3));
+        tl.fromTo("#alBot", { opacity: 0, y: -10 }, { opacity: 1, y: 0, duration: 0.3 }, at(29.8));
+        // coins travel along the arcs: me→friend = 투자(top), friend→me = 배당(bottom)
+        const arcPt = (sel, p) => $(sel).getPointAtLength($(sel).getTotalLength() * p);
+        const cA = { p: 0 }, cB = { p: 0 };
+        const placeCoin = (el, sel, p) => { const q = arcPt(sel, p); el.style.left = q.x + "px"; el.style.top = q.y + "px"; el.style.opacity = p <= 0 || p >= 1 ? 0 : 1; };
+        tl.set(".coin", { opacity: 0 }, 0);
+        tl.fromTo(cA, { p: 0 }, { p: 1, duration: at(1.5), ease: "power1.inOut", repeat: 1, onUpdate: () => placeCoin($("#coinA"), "#arcTop", cA.p) }, at(28.5));
+        tl.fromTo(cB, { p: 0 }, { p: 1, duration: at(1.5), ease: "power1.inOut", repeat: 1, onUpdate: () => placeCoin($("#coinB"), "#arcBot", cB.p) }, at(30));
+        tl.to(["#k5", "#fb1", "#fb2", "#pair"], { scale: 0.9, opacity: 0.25, filter: "blur(10px)", duration: at(1.5), ease: "power2.in" }, at(32));
+
+        // ===== S6 iris → end card (beats 32–40)
+        tl.fromTo("#iris", { scale: 0 }, { scale: 3, duration: at(1), ease: "back.out(2)" }, at(32));
+        tl.to("#iris", { scale: 110, duration: at(0.5), ease: "power3.in" }, at(32.5));
+        tl.set(["#s5"], { opacity: 0 }, at(33));
+        tl.set("#iris", { scale: 1, width: "4400px", height: "4400px", borderRadius: "2200px" }, at(33));
+        tl.to("#iris", { width: "860px", height: "140px", borderRadius: "70px", duration: 0.6, ease: "expo.out" }, at(33) + 0.03);
+        tl.fromTo("#logo", { scale: 1.4, opacity: 0, filter: "blur(20px)" }, { scale: 1, opacity: 1, filter: "blur(0px)", duration: 0.6, ease: "back.out(1.8)" }, at(33) + 0.12);
+        tl.fromTo("#ctaText", { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.35 }, at(33) + 0.35);
+        tl.fromTo("#brand", { y: 30, opacity: 0 }, { y: 0, opacity: 1, duration: 0.4, ease: "back.out(1.6)" }, at(34));
+        tl.fromTo("#tag", { y: 40, opacity: 0, filter: "blur(10px)" }, { y: 0, opacity: 1, filter: "blur(0px)", duration: 0.45, ease: "back.out(1.7)" }, at(34.5));
+        tl.fromTo(".chip", { y: 30, opacity: 0, scale: 0.8 }, { y: 0, opacity: 1, scale: 1, duration: 0.4, ease: "back.out(2.4)", stagger: 0.1 }, at(35.5));
+        tl.fromTo("#bunny", { y: 600 }, { y: 0, duration: 0.6, ease: "back.out(1.4)" }, at(35));
+        tl.fromTo("#bunny", { rotation: 0 }, { rotation: -3, duration: at(1), ease: "sine.inOut", repeat: 3, yoyo: true, immediateRender: false, transformOrigin: "50% 100%" }, at(37));
+        [37, 39].forEach((bt) => tl.fromTo(["#iris", "#ctaText"], { scale: 1.06 }, { scale: 1, duration: at(1.5), ease: "elastic.out(1, 0.5)", immediateRender: false }, at(bt)));
+        tl.fromTo("#logo", { scale: 1 }, { scale: 1.03, duration: 2.4, ease: "sine.inOut", immediateRender: false }, at(36));
+
+        tl.seek(0);
+        window.__timelines = window.__timelines || {};
+        window.__timelines["main"] = tl;
+      })();
+    </script>
+  </body>
+</html>
