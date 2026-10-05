@@ -10,7 +10,7 @@
     {"id":"track","type":"color","label":"Track","default":"#eadfd2"},
     {"id":"up","type":"color","label":"Price up","default":"#ee4b5a"},
     {"id":"userName","type":"string","label":"Profile name","default":"갓생토끼"},
-    {"id":"sample","type":"string","label":"Corner label","default":"제안용 시안"}
+    {"id":"sample","type":"string","label":"Corner label","default":""}
   ]'
 >
   <head>
@@ -257,7 +257,7 @@
     <script>
       (function () {
         const V = (window.__hyperframes && window.__hyperframes.getVariables && window.__hyperframes.getVariables()) || {};
-        const D = { bg: "#faf6ef", ink: "#4a3728", muted: "#8c7a68", accent: "#ff7f50", track: "#eadfd2", up: "#ee4b5a", userName: "갓생토끼", sample: "제안용 시안" };
+        const D = { bg: "#faf6ef", ink: "#4a3728", muted: "#8c7a68", accent: "#ff7f50", track: "#eadfd2", up: "#ee4b5a", userName: "갓생토끼", sample: "" };
         Object.keys(D).forEach((k) => V[k] == null && (V[k] = D[k]));
         const B = 0.46875; // 128 BPM beat grid (40 beats = 18.75s)
         const at = (beats) => +(beats * B).toFixed(5);
